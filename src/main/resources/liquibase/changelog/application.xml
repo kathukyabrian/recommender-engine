@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="20220422065020" author="user">
+        <createTable tableName="tbl_applications">
+
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="developer_email" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="developer_phone_number" type="varchar(15)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="key_metrics" type="varchar(2000)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="product_source" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="api_key" type="varchar(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="status" type="varchar(30)"/>
+
+            <column name="created_on" type="varchar(70)"/>
+
+            <column name="updated_on" type="varchar(70)"/>
+
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
