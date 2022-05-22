@@ -7,7 +7,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/recommender?useUnicode=true&characterEncoding=utf8
     username: root
-    password: '3108'
+    password: 'kitunda2018'
     hikari:
       data-source-properties:
         cachePrepStmts: true
@@ -35,4 +35,5 @@ spring:
 application:
   notify-url: http://mwandishi.co.ke:8041/api/
   notify-key: a2VrZWtyZWF0aXZlc0BnbWFpbC5jb206aWZyYmFpdXRicXdoY3Fmeg==
+  config-path: /home/kitunda/Documents/Projects/recommender/config/
 

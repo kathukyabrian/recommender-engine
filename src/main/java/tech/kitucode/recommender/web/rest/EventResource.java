@@ -13,11 +13,9 @@ import java.util.List;
 public class EventResource {
 
     private final EventService eventService;
-
     public EventResource(EventService eventService) {
         this.eventService = eventService;
     }
-
 
     @PostMapping("/events")
     public Event save(@RequestBody Event event) {
@@ -52,5 +50,12 @@ public class EventResource {
         log.debug("REST request to delete event with id : {}", id);
 
         eventService.deleteEvent(id);
+    }
+
+    @GetMapping("/events/process")
+    public void processEvents(){
+        log.debug("REST request to process events");
+
+        eventService.processEvents();;
     }
 }
