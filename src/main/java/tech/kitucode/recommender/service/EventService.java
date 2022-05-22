@@ -156,13 +156,15 @@ public class EventService {
         log.info("Start processing of events from id : {}", startId);
 
         // update last processed id
+        setLastIdProcessed(5);
     }
 
     /**
      * Get the last id processed from the config file
+     *
      * @return
      */
-    public int getLastIdProcessed(){
+    public int getLastIdProcessed() {
         String configFileName = "id-tracker.txt";
 
         configFileName = applicationProperties.getConfigPath() + configFileName;
@@ -173,7 +175,7 @@ public class EventService {
         try {
             Scanner reader = new Scanner(file);
 
-            while(reader.hasNextInt()){
+            while (reader.hasNextInt()) {
                 startId = reader.nextInt();
             }
         } catch (FileNotFoundException e) {
@@ -183,14 +185,14 @@ public class EventService {
         return startId;
     }
 
-    public void setLastIdProcessed(int lastIdProcessed){
+    public void setLastIdProcessed(int lastIdProcessed) {
         String configFileName = "id-tracker.txt";
 
         configFileName = applicationProperties.getConfigPath() + configFileName;
 
         File configFile = new File(configFileName);
 
-        if(!configFile.exists()){
+        if (!configFile.exists()) {
             try {
                 configFile.createNewFile();
             } catch (IOException e) {
@@ -200,7 +202,7 @@ public class EventService {
 
         try {
             FileWriter fileWriter = new FileWriter(configFile);
-            fileWriter.write(lastIdProcessed);
+            fileWriter.write(lastIdProcessed + "");
             fileWriter.close();
             log.info("Finished writing to file");
         } catch (IOException e) {
