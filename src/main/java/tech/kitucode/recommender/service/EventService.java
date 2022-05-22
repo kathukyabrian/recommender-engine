@@ -14,10 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -150,13 +148,26 @@ public class EventService {
      * Batch process since there are complex mathematical computations to be done
      */
     public void processEvents() {
-        // need to start from last processed id
+        long startId = getLastIdProcessed();
+        long lastId = startId;
+        log.info("Start processing of events from id : {}", startId + 1);
 
-        int startId = getLastIdProcessed();
-        log.info("Start processing of events from id : {}", startId);
+        // find events whose id is greater or equal to start id
+        List<Event> events = eventRepository.findAllByIdGreaterThan(startId);
+        log.info("There are {} events to be processed", events.size());
+
+        for (Event event : events) {
+            log.info("Processing event with id : {}", event.getId());
+            // recommend
+            // use content filtering here
+            doContentFiltering(event);
+            // use clustering here
+            event.setIsProcessed(true);
+            lastId = event.getId();
+        }
 
         // update last processed id
-        setLastIdProcessed(5);
+        setLastIdProcessed(lastId);
     }
 
     /**
@@ -164,19 +175,19 @@ public class EventService {
      *
      * @return
      */
-    public int getLastIdProcessed() {
+    public long getLastIdProcessed() {
         String configFileName = "id-tracker.txt";
 
         configFileName = applicationProperties.getConfigPath() + configFileName;
 
         File file = new File(configFileName);
 
-        int startId = 0;
+        long startId = 0;
         try {
             Scanner reader = new Scanner(file);
 
-            while (reader.hasNextInt()) {
-                startId = reader.nextInt();
+            while (reader.hasNextLong()) {
+                startId = reader.nextLong();
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -185,7 +196,7 @@ public class EventService {
         return startId;
     }
 
-    public void setLastIdProcessed(int lastIdProcessed) {
+    public void setLastIdProcessed(long lastIdProcessed) {
         String configFileName = "id-tracker.txt";
 
         configFileName = applicationProperties.getConfigPath() + configFileName;
@@ -210,4 +221,63 @@ public class EventService {
         }
     }
 
+    public Set<Integer> doContentFiltering(Event event) {
+        log.info("About to execute content filtering algorithm for event {}", event.getId());
+
+        Set<Integer> result = new HashSet<>();
+        // extract the event values
+        List<Integer> eventValuesList = extractEventList(event);
+
+        log.info("List of event values is : {}", eventValuesList);
+
+        for (Event eventIteration : eventRepository.findAll()) {
+            // skip the event in question
+            if (event.getId().equals(eventIteration.getId())) {
+                continue;
+            }
+
+            List<Integer> currentEventValueList = extractEventList(eventIteration);
+
+            if (currentEventValueList.containsAll(eventValuesList)) {
+                List<Integer> unionIds = difference(currentEventValueList, eventValuesList);
+                result.addAll(unionIds);
+            }
+        }
+
+        log.info("The result is {}", result);
+
+        return result;
+    }
+
+    public List<Integer> extractEventList(Event event) {
+        log.info("Extracting event list for event {}", event.getId());
+
+        List<Integer> eventList = new ArrayList<>();
+
+        eventList = Arrays.asList(event.getEventValue().split(","))
+                .stream()
+                .map(value -> Integer.parseInt(value))
+                .collect(Collectors.toList());
+
+        return eventList;
+    }
+
+    /**
+     * Get elements that are not in both lists
+     * @param containerList
+     * @param hypothesisList
+     * @return
+     * @param <T>
+     */
+    public <T> List<T> difference(List<T> containerList, List<T> hypothesisList){
+        List<T> list = new ArrayList<T>();
+
+        for(T t: containerList){
+            if(!hypothesisList.contains(t)){
+                list.add(t);
+            }
+        }
+
+        return list;
+    }
 }
