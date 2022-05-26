@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tech.kitucode.recommender.config.ApplicationProperties;
 import tech.kitucode.recommender.domain.Event;
+import tech.kitucode.recommender.exceptions.EntityNotFoundException;
 import tech.kitucode.recommender.repository.EventRepository;
 
 import java.io.File;
@@ -67,7 +68,7 @@ public class EventService {
      * @param id
      * @return
      */
-    public Event findOne(Long id) {
+    public Event findOne(Long id) throws EntityNotFoundException {
 
         log.debug("Getting event with id : {}", id);
 
@@ -77,6 +78,8 @@ public class EventService {
 
         if (optionalEvent.isPresent()) {
             event = optionalEvent.get();
+        }else{
+            throw new EntityNotFoundException("Event with the specified id does not exist");
         }
 
         return event;
@@ -221,10 +224,10 @@ public class EventService {
         }
     }
 
-    public Set<Integer> doContentFiltering(Event event) {
+    public List<Integer> doContentFiltering(Event event) {
         log.info("About to execute content filtering algorithm for event {}", event.getId());
 
-        Set<Integer> result = new HashSet<>();
+        List<Integer> result = new ArrayList<>();
         // extract the event values
         List<Integer> eventValuesList = extractEventList(event);
 
@@ -232,9 +235,10 @@ public class EventService {
 
         for (Event eventIteration : eventRepository.findAll()) {
             // skip the event in question
-            if (event.getId().equals(eventIteration.getId())) {
-                continue;
-            }
+//            if (event.getId().equals(eventIteration.getId())) {
+//                log.info("Skipping");
+//                continue;
+//            }
 
             List<Integer> currentEventValueList = extractEventList(eventIteration);
 
