@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.kitucode.recommender.domain.Event;
 import tech.kitucode.recommender.exceptions.EntityNotFoundException;
 import tech.kitucode.recommender.service.EventService;
+import tech.kitucode.recommender.service.dto.ResultDTO;
 import tech.kitucode.recommender.web.vm.ErrorVM;
 
 import java.util.List;
@@ -64,9 +65,9 @@ public class EventResource {
     }
 
     @GetMapping("/events/process")
-    public void processEvents(){
+    public List<ResultDTO> processEvents(){
         log.debug("REST request to process events");
 
-        eventService.processEvents();;
+        return eventService.processEvents();
     }
 }

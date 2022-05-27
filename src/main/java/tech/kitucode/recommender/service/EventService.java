@@ -9,6 +9,7 @@ import tech.kitucode.recommender.config.ApplicationProperties;
 import tech.kitucode.recommender.domain.Event;
 import tech.kitucode.recommender.exceptions.EntityNotFoundException;
 import tech.kitucode.recommender.repository.EventRepository;
+import tech.kitucode.recommender.service.dto.ResultDTO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -78,7 +79,7 @@ public class EventService {
 
         if (optionalEvent.isPresent()) {
             event = optionalEvent.get();
-        }else{
+        } else {
             throw new EntityNotFoundException("Event with the specified id does not exist");
         }
 
@@ -150,20 +151,22 @@ public class EventService {
      * Process an event
      * Batch process since there are complex mathematical computations to be done
      */
-    public void processEvents() {
+    public List<ResultDTO> processEvents() {
         long startId = getLastIdProcessed();
         long lastId = startId;
         log.info("Start processing of events from id : {}", startId + 1);
 
+        List<ResultDTO> result = new ArrayList<>();
         // find events whose id is greater or equal to start id
         List<Event> events = eventRepository.findAllByIdGreaterThan(startId);
         log.info("There are {} events to be processed", events.size());
-
         for (Event event : events) {
             log.info("Processing event with id : {}", event.getId());
             // recommend
             // use content filtering here
-            doContentFiltering(event);
+            List<Integer> recommended = doContentFiltering(event);
+            ResultDTO resultDTO = new ResultDTO(event.getId(), recommended);
+            result.add(resultDTO);
             // use clustering here
             event.setIsProcessed(true);
             lastId = event.getId();
@@ -171,6 +174,8 @@ public class EventService {
 
         // update last processed id
         setLastIdProcessed(lastId);
+
+        return result;
     }
 
     /**
@@ -235,10 +240,13 @@ public class EventService {
 
         for (Event eventIteration : eventRepository.findAll()) {
             // skip the event in question
-//            if (event.getId().equals(eventIteration.getId())) {
-//                log.info("Skipping");
-//                continue;
-//            }
+
+            // there is an issue here
+            // It keeps skipping out of the for block and going out.....
+            if (event.getId().equals(eventIteration.getId())) {
+                log.info("Skipping");
+                continue;
+            }
 
             List<Integer> currentEventValueList = extractEventList(eventIteration);
 
@@ -268,16 +276,17 @@ public class EventService {
 
     /**
      * Get elements that are not in both lists
+     *
      * @param containerList
      * @param hypothesisList
-     * @return
      * @param <T>
+     * @return
      */
-    public <T> List<T> difference(List<T> containerList, List<T> hypothesisList){
+    public <T> List<T> difference(List<T> containerList, List<T> hypothesisList) {
         List<T> list = new ArrayList<T>();
 
-        for(T t: containerList){
-            if(!hypothesisList.contains(t)){
+        for (T t : containerList) {
+            if (!hypothesisList.contains(t)) {
                 list.add(t);
             }
         }
