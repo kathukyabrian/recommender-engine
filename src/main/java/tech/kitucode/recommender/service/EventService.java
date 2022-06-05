@@ -165,9 +165,13 @@ public class EventService {
             // recommend
             // use content filtering here
             List<Integer> recommended = doContentFiltering(event);
+            // use clustering here
+            List<Integer> recommendedByClustering = doClustering(event);
+            recommended.addAll(recommendedByClustering);
+
             ResultDTO resultDTO = new ResultDTO(event.getId(), recommended);
             result.add(resultDTO);
-            // use clustering here
+
             event.setIsProcessed(true);
             lastId = event.getId();
         }
@@ -259,6 +263,14 @@ public class EventService {
         log.info("The result is {}", result);
 
         return result;
+    }
+
+    public List<Integer> doClustering(Event event) {
+        log.info("About to execute clustering algorithm for event : {}", event);
+
+        List<Integer> recommended = new ArrayList<>();
+
+        return recommended;
     }
 
     public List<Integer> extractEventList(Event event) {

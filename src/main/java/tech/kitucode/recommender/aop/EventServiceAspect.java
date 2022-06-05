@@ -16,7 +16,7 @@ public class EventServiceAspect {
     @Before(value = "execution(* tech.kitucode.recommender.service.EventService.*(..))")
     public void beforeAdvice(JoinPoint joinPoint){
         logger.info("Before method : {}", joinPoint.getSignature());
-        logger.info("");
+        logger.info("Arguments are : {}", joinPoint.getArgs());
     }
 
 }
