@@ -6,5 +6,6 @@
 
     <include file="liquibase/changelog/application.xml" relativeToChangelogFile="false"/>
     <include file="liquibase/changelog/event.xml" relativeToChangelogFile="false"/>
+    <include file="liquibase/changelog/product.xml" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>
