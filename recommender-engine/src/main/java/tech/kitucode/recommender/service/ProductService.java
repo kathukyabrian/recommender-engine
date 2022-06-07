@@ -61,4 +61,12 @@ public class ProductService {
 
         return products;
     }
+
+    public List<Product> getAll() {
+        log.info("Request to get all products");
+
+        List<Product> products = productRepository.findAll();
+
+        return products;
+    }
 }

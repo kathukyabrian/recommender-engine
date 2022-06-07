@@ -21,6 +21,14 @@ public class ProductResource {
         this.productService = productService;
     }
 
+
+    @GetMapping("/products")
+    public List<Product> getAll(){
+        log.info("REST request to get all products");
+
+        return productService.getAll();
+    }
+
     @PostMapping("/products")
     public Product save(@RequestBody Product product) {
         log.info("REST request to save product : {}", product);
