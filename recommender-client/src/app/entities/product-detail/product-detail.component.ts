@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { EventsService } from 'src/app/services/events.service';
 import { ProductService } from 'src/app/services/product.service';
+import { Constants } from 'src/app/shared/classes/constants';
 
 @Component({
   selector: 'app-product-detail',
@@ -17,7 +19,8 @@ export class ProductDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private productService: ProductService
+    private productService: ProductService,
+    private eventService: EventsService
   ) { }
 
   loadOneProduct(id: number) {
@@ -36,13 +39,58 @@ export class ProductDetailComponent implements OnInit {
 
   }
 
+
+  addEventValueToList(eventId: number) {
+    // get current value from session
+    let events: Array<any> = JSON.parse(sessionStorage.getItem(Constants.EVENTS_VALUE_KEY) + "");
+    if (!events) {
+      events = [];
+    }
+    events.push(eventId)
+
+    sessionStorage.setItem(Constants.EVENTS_VALUE_KEY, JSON.stringify(events))
+
+    // get event list length and check if it matches threshold
+    if (events.length == Constants.EVENT_THRESHOLD) {
+      let arrayStr = events.join(',');
+      this.pushEvent(arrayStr, 1, 1, 1);
+
+      // empty the session storage
+      sessionStorage.removeItem(Constants.EVENTS_VALUE_KEY);
+    } else {
+      console.log("Not yet full");
+    }
+  }
+  pushEvent(events: any, applicationId: number, userId: number, globalUserId: number) {
+
+    let event = {
+      applicationId: applicationId,
+      eventType: "PRODUCT_VIEWS",
+      eventValue: events,
+      userId: userId,
+      globalUserId: globalUserId
+    }
+
+    this.eventService.save(event).subscribe(
+      {
+        next: (res) => {
+          console.log(res);
+        },
+        error: (err) => {
+          console.log(err);
+        }
+      }
+    );
+
+  }
+
   ngOnInit(): void {
 
     let id = Number(this.route.snapshot.paramMap.get("id"));
 
     this.loadOneProduct(id);
 
-    // send event here
+    this.addEventValueToList(id);
 
   }
 
