@@ -5,4 +5,5 @@ export class Constants {
     // should always be an odd number greater than 1
     static EVENT_THRESHOLD = 3;
     static EVENTS_VALUE_KEY = "events";
+    static RECOMMENDATIONS_KEY = "recommendations";
 }
