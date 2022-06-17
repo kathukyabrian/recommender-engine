@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tech.kitucode.recommender.config.ApplicationProperties;
 import tech.kitucode.recommender.domain.Event;
+import tech.kitucode.recommender.domain.Profile;
 import tech.kitucode.recommender.exceptions.EntityNotFoundException;
 import tech.kitucode.recommender.repository.EventRepository;
 import tech.kitucode.recommender.service.dto.ResultDTO;
@@ -25,10 +26,12 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final ApplicationProperties applicationProperties;
+    private final ProfileService profileService;
 
-    public EventService(EventRepository eventRepository, ApplicationProperties applicationProperties) {
+    public EventService(EventRepository eventRepository, ApplicationProperties applicationProperties, ProfileService profileService) {
         this.eventRepository = eventRepository;
         this.applicationProperties = applicationProperties;
+        this.profileService = profileService;
     }
 
     /**
@@ -179,6 +182,8 @@ public class EventService {
         // update last processed id
         setLastIdProcessed(lastId);
 
+        resolveProcessingResults(result);
+
         return result;
     }
 
@@ -252,7 +257,7 @@ public class EventService {
                 continue;
             }
 
-            if(eventIteration.getGlobalUserId().equals(event.getGlobalUserId())){
+            if (eventIteration.getGlobalUserId().equals(event.getGlobalUserId())) {
                 log.info("Event belongs to the same user, skipping.....");
                 continue;
             }
@@ -289,6 +294,39 @@ public class EventService {
                 .collect(Collectors.toList());
 
         return eventList;
+    }
+
+    /**
+     * Map the recommendations to user
+     *
+     * @param result
+     */
+    public void resolveProcessingResults(List<ResultDTO> result) {
+        Map<Long, List<Integer>> resultMap = new HashMap<>();
+        for (ResultDTO resultDTO : result) {
+            Long globalUserId = resultDTO.getGlobalUserId();
+            List<Integer> recommended = resultDTO.getRecommended();
+            if (recommended == null) {
+                recommended = new ArrayList<>();
+            }
+            recommended.addAll(resultDTO.getRecommended());
+            resultMap.put(globalUserId, recommended);
+        }
+
+        for (Map.Entry<Long, List<Integer>> entry : resultMap.entrySet()) {
+            try {
+                Profile profile = profileService.findOneByGlobalUserId(entry.getKey());
+                profile.setRecommendations(entry.getValue().toString());
+                profile.setUpdatedOn(LocalDateTime.now());
+                profileService.save(profile);
+            } catch (EntityNotFoundException e) {
+                Profile profile = new Profile();
+                profile.setGlobalUserId(entry.getKey());
+                profile.setRecommendations(entry.getValue().toString());
+                profile.setUpdatedOn(LocalDateTime.now());
+                profileService.save(profile);
+            }
+        }
     }
 
     /**

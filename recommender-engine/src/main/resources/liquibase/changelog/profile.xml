@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <changeSet id="20220617215830" author="user">
+        <createTable tableName="tbl_profiles">
+
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="global_user_od" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="recommendations" type="varchar(500)"/>
+
+            <column name="updated_on" type="varchar(70)"/>
+
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20220617220420" author="user">
+        <renameColumn tableName="tbl_profiles" columnDataType="bigint" oldColumnName="global_user_od" newColumnName="global_user_id"/>
+    </changeSet>
+</databaseChangeLog>
