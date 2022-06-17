@@ -53,7 +53,7 @@ export class ProductDetailComponent implements OnInit {
     // get event list length and check if it matches threshold
     if (events.length == Constants.EVENT_THRESHOLD) {
       let arrayStr = events.join(',');
-      this.pushEvent(arrayStr, 1, 1, 1);
+      this.pushEvent(arrayStr, 1, 1, Number(localStorage.getItem(Constants.USER_KEY) + ""));
 
       // empty the session storage
       sessionStorage.removeItem(Constants.EVENTS_VALUE_KEY);

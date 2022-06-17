@@ -6,4 +6,5 @@ export class Constants {
     static EVENT_THRESHOLD = 3;
     static EVENTS_VALUE_KEY = "events";
     static RECOMMENDATIONS_KEY = "recommendations";
+    static USER_KEY = "global-user-id";
 }

@@ -10,5 +10,9 @@ import java.util.List;
 public class ResultDTO {
     private Long eventId;
 
+    private Long userId;
+
+    private Long globalUserId;
+
     private List<Integer> recommended;
 }

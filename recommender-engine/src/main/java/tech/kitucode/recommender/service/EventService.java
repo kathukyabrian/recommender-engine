@@ -169,7 +169,7 @@ public class EventService {
             List<Integer> recommendedByClustering = doClustering(event);
             recommended.addAll(recommendedByClustering);
 
-            ResultDTO resultDTO = new ResultDTO(event.getId(), recommended);
+            ResultDTO resultDTO = new ResultDTO(event.getId(), event.getUserId(), event.getGlobalUserId(), recommended);
             result.add(resultDTO);
 
             event.setIsProcessed(true);
@@ -248,7 +248,12 @@ public class EventService {
             // there is an issue here
             // It keeps skipping out of the for block and going out.....
             if (event.getId().equals(eventIteration.getId())) {
-                log.info("Skipping");
+                log.info("This is the same event, skipping.....");
+                continue;
+            }
+
+            if(eventIteration.getGlobalUserId().equals(event.getGlobalUserId())){
+                log.info("Event belongs to the same user, skipping.....");
                 continue;
             }
 

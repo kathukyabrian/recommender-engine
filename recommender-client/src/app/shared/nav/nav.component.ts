@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { EventsService } from 'src/app/services/events.service';
 import { Constants } from '../classes/constants';
 
@@ -9,8 +10,8 @@ import { Constants } from '../classes/constants';
 })
 export class NavComponent implements OnInit {
 
-
   constructor(
+    private router: Router,
     private eventsService: EventsService
   ) { }
 
@@ -23,8 +24,13 @@ export class NavComponent implements OnInit {
       {
         next: (res) => {
           localStorage.setItem(Constants.RECOMMENDATIONS_KEY, JSON.stringify(res));
+          this.router.navigate(['/recommended']);
         },
-        error: (err) => { },
+        error: (err) => {
+          if (processEventsButton) {
+            processEventsButton.innerHTML = "";
+          }
+        },
         complete: () => {
           if (processEventsButton) {
             processEventsButton.innerHTML = "Process Events";
