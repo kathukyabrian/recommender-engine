@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.kitucode.recommender.domain.Profile;
 import tech.kitucode.recommender.exceptions.EntityNotFoundException;
 import tech.kitucode.recommender.service.ProfileService;
+import tech.kitucode.recommender.service.dto.ProfileDTO;
 import tech.kitucode.recommender.web.vm.ErrorVM;
 
 @Log4j2
@@ -26,14 +27,14 @@ public class ProfileResource {
     public ResponseEntity getOne(@PathVariable Long id) {
         log.info("REST request to get profile for user : {}", id);
 
-        Profile profile = null;
+        ProfileDTO profileDTO = null;
         try {
-            profile = profileService.findOneByGlobalUserId(id);
+            profileDTO = profileService.findOneByGlobalUserId(id);
         } catch (EntityNotFoundException e) {
             ErrorVM errorVM = new ErrorVM(404, e.getMessage());
             return ResponseEntity.status(404).body(errorVM);
         }
 
-        return ResponseEntity.ok().body(profile);
+        return ResponseEntity.ok().body(profileDTO);
     }
 }

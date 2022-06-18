@@ -14,4 +14,21 @@
             </div>
         </div>
     </div>
+
+    <h1>Recommended Products</h1>
+    <div class="row" *ngIf="recommendedProducts">
+        <div *ngFor="let product of recommendedProducts" class="col-md-4 mt-2">
+            <div class="card">
+                <div class="card-header">
+                    {{product.name}}
+                </div>
+                <div class="card-body">
+                    {{product.description}}
+                </div>
+                <div class="card-footer">
+                    <button [routerLink]="[product.id]" class="btn btn-success btn-sm">View</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

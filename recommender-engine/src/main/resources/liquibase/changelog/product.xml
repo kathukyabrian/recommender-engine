@@ -27,4 +27,8 @@
 
         </createTable>
     </changeSet>
+
+    <changeSet id="20220618122230" author="user">
+        <modifyDataType tableName="tbl_products" columnName="id" newDataType="int"/>
+    </changeSet>
 </databaseChangeLog>

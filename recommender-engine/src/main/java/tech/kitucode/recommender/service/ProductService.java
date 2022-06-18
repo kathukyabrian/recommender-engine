@@ -31,7 +31,7 @@ public class ProductService {
         return product;
     }
 
-    public Product getOne(Long id) throws EntityNotFoundException {
+    public Product getOne(Integer id) throws EntityNotFoundException {
         log.info("Request to get product with id : {}", id);
 
         Optional<Product> optionalProduct = productRepository.findById(id);
@@ -43,12 +43,12 @@ public class ProductService {
         }
     }
 
-    public List<Product> getMany(List<Long> ids) {
+    public List<Product> getMany(List<Integer> ids) {
         log.info("Request to get products with ids : {}", ids);
 
         List<Product> products = new ArrayList<>();
 
-        for (Long id : ids) {
+        for (Integer id : ids) {
             Product product = null;
             try {
                 product = getOne(id);

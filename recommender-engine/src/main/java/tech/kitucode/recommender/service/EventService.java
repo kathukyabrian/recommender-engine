@@ -315,7 +315,7 @@ public class EventService {
 
         for (Map.Entry<Long, List<Integer>> entry : resultMap.entrySet()) {
             try {
-                Profile profile = profileService.findOneByGlobalUserId(entry.getKey());
+                Profile profile = profileService.findOneEntityByGlobalUserId(entry.getKey());
                 profile.setRecommendations(entry.getValue().toString());
                 profile.setUpdatedOn(LocalDateTime.now());
                 profileService.save(profile);

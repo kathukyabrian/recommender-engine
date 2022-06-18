@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from 'src/app/services/product.service';
+import { ProfileService } from 'src/app/services/profile.service';
+import { Constants } from 'src/app/shared/classes/constants';
 
 @Component({
   selector: 'app-products',
@@ -10,11 +12,16 @@ export class ProductsComponent implements OnInit {
 
   products!: Array<any>;
 
+  recommendedProducts!: Array<any>;
+
   error: boolean = false;
 
   errorMessage: string = "";
 
-  constructor(private productService: ProductService) { }
+  constructor(
+    private productService: ProductService,
+    private profileService: ProfileService
+  ) { }
 
   getAllProducts() {
     this.productService.getAll().subscribe(
@@ -31,8 +38,24 @@ export class ProductsComponent implements OnInit {
     );
   }
 
+  getRecommendedProducts() {
+    let globalUserId = Number(localStorage.getItem(Constants.USER_KEY));
+    this.profileService.getOneProfile(globalUserId).subscribe(
+      {
+        next: (res) => {
+          
+          this.recommendedProducts = res.recommendations;
+        },
+        error: (err) => {
+
+        }
+      }
+    )
+  }
+
   ngOnInit(): void {
     this.getAllProducts();
+    this.getRecommendedProducts();
   }
 
 }

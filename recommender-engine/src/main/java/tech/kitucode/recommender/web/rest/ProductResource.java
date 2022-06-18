@@ -37,14 +37,14 @@ public class ProductResource {
     }
 
     @PostMapping("/products/bulk")
-    public List<Product> retrieveMany(@RequestBody List<Long> ids) {
+    public List<Product> retrieveMany(@RequestBody List<Integer> ids) {
         log.info("REST request to get multiple products : {}", ids);
 
         return productService.getMany(ids);
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity getOne(@PathVariable Long id){
+    public ResponseEntity getOne(@PathVariable Integer id){
         log.info("REST request to find product with id : {}", id);
 
         Product product = null;
