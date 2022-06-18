@@ -314,17 +314,16 @@ public class EventService {
     /**
      * Map the recommendations to user
      *
-     * @param result
+     * @param results
      */
-    public void resolveProcessingResults(List<ResultDTO> result) {
+    public void resolveProcessingResults(List<ResultDTO> results) {
         Map<Long, List<Integer>> resultMap = new HashMap<>();
-        for (ResultDTO resultDTO : result) {
+        for (ResultDTO resultDTO : results) {
             Long globalUserId = resultDTO.getGlobalUserId();
             List<Integer> recommended = resultDTO.getRecommended();
             if (recommended == null) {
                 recommended = new ArrayList<>();
             }
-            recommended.addAll(resultDTO.getRecommended());
             resultMap.put(globalUserId, recommended);
         }
 

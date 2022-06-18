@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProductDetailComponent } from './entities/product-detail/product-detail.component';
 import { ProductsComponent } from './entities/products/products.component';
-import { RecommendedComponent } from './entities/recommended/recommended.component';
 
 const routes: Routes = [
   {
@@ -12,10 +11,6 @@ const routes: Routes = [
   {
     path: ':id',
     component: ProductDetailComponent
-  },
-  {
-    path: 'recommended',
-    component: RecommendedComponent
   }
 ];
 

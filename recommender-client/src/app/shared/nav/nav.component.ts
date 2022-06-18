@@ -23,8 +23,7 @@ export class NavComponent implements OnInit {
     this.eventsService.process().subscribe(
       {
         next: (res) => {
-          localStorage.setItem(Constants.RECOMMENDATIONS_KEY, JSON.stringify(res));
-          this.router.navigate(['/recommended']);
+          this.router.navigate(['']);
         },
         error: (err) => {
           if (processEventsButton) {
