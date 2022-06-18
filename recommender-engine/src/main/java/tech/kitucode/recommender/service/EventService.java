@@ -164,7 +164,6 @@ public class EventService {
         List<Event> events = eventRepository.findAllByIdGreaterThan(startId);
         log.info("There are {} events to be processed", events.size());
         for (Event event : events) {
-            log.info("Processing event with id : {}", event.getId());
             // recommend
             // use content filtering here
             List<Integer> recommended = doContentFiltering(event);
@@ -232,7 +231,6 @@ public class EventService {
             FileWriter fileWriter = new FileWriter(configFile);
             fileWriter.write(lastIdProcessed + "");
             fileWriter.close();
-            log.info("Finished writing to file");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -245,34 +243,52 @@ public class EventService {
         // extract the event values
         List<Integer> eventValuesList = extractEventList(event);
 
-        log.info("List of event values is : {}", eventValuesList);
 
         for (Event eventIteration : eventRepository.findAll()) {
-            // skip the event in question
-
-            // there is an issue here
-            // It keeps skipping out of the for block and going out.....
+            // skip the event in question.
             if (event.getId().equals(eventIteration.getId())) {
-                log.info("This is the same event, skipping.....");
                 continue;
             }
 
             if (eventIteration.getGlobalUserId().equals(event.getGlobalUserId())) {
-                log.info("Event belongs to the same user, skipping.....");
                 continue;
             }
 
             List<Integer> currentEventValueList = extractEventList(eventIteration);
 
-            if (currentEventValueList.containsAll(eventValuesList)) {
+            if (meetsThreshold(2, currentEventValueList, eventValuesList)) {
                 List<Integer> unionIds = difference(currentEventValueList, eventValuesList);
                 result.addAll(unionIds);
             }
         }
 
-        log.info("The result is {}", result);
 
         return result;
+    }
+
+    /**
+     * Check if 2 lists meet the value count threshold
+     * @param threshold
+     * @param firstList
+     * @param secondList
+     * @return
+     */
+    public boolean meetsThreshold(int threshold, List<Integer> firstList, List<Integer> secondList) {
+        int tempThreshold = 0;
+
+        for (Integer i : firstList) {
+            for (Integer j : secondList) {
+                if (i.equals(j)) {
+                    tempThreshold += 1;
+                }
+            }
+        }
+
+        if (tempThreshold >= threshold) {
+            return true;
+        }
+
+        return false;
     }
 
     public List<Integer> doClustering(Event event) {
@@ -284,7 +300,6 @@ public class EventService {
     }
 
     public List<Integer> extractEventList(Event event) {
-        log.info("Extracting event list for event {}", event.getId());
 
         List<Integer> eventList = new ArrayList<>();
 
